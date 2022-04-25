@@ -32,4 +32,27 @@ app.post("/tweets", (req, res) => {
         tweet
     });
     res.status(201).send("Tweet criado!");
+});
+
+app.get("/tweets", (req, res) => {
+    const {page} = req.query;
+    const recentTweets = tweets.slice(0).reverse();
+    if(!page) {
+        const lastTenTweets = recentTweets.filter((tweet, i) => i < 10);
+        return res.send(lastTenTweets);
+    }
+    if(page < 1) {
+        return res.status(400).send("Informe uma página válida!");
+    }
+    const tweetsPage = recentTweets.filter((tweet, i) => i < page*10 && i >= page*10 - 10);
+    res.send(tweetsPage);
 })
+
+app.get("/tweets/:username", (req, res) => {
+    const {username} = req.params;
+    const recentTweets = tweets.slice(0).reverse();
+    const userTweets = recentTweets.filter(tweet => tweet.username === username);
+    res.send(userTweets);
+})
+
+app.listen(5000, () => console.log("Server is running on: http://localhost:5000"));
